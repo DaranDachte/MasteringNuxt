@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="mt-0 mb-1 font-bold uppercase text-slate-400">
+    <p class="mt-0 mb-1 font-bold uppercase">
       Lesson {{ chapter.number }} - {{ lesson.number }}
     </p>
     <h2 class="my-0">{{ lesson.title }}</h2>
@@ -21,7 +21,11 @@
       </NuxtLink>
     </div>
     <VideoPlayer v-if="lesson.videoId" :video-id="lesson.videoId" />
-    <p>{{ lesson.text }}</p>
+    <p class="mb-[1rem]">{{ lesson.text }}</p>
+    <LessonCompleteButton
+      :model-value="isLessonComplete"
+      @update:model-value="toggleComplete"
+    />
   </div>
 </template>
 
@@ -32,7 +36,6 @@ const chapterSlug = route.params.chapterSlug;
 const lessonSlug = route.params.lessonSlug;
 
 const course = useCourse();
-console.log(course);
 
 const chapter = computed(() => {
   return course.chapters.find(
@@ -45,4 +48,33 @@ const lesson = computed(() => {
     (lesson) => lesson.slug === route.params.lessonSlug
   );
 });
+
+const title = computed(() => {
+  return `${lesson.value.title}- ${course.title}`;
+});
+useHead({
+  title,
+});
+
+const progress = useLocalStorage("progress", []);
+
+const isLessonComplete = computed(() => {
+  if (!progress.value[chapter.value.number - 1]) {
+    return false;
+  }
+
+  if (!progress.value[chapter.value.number - 1][lesson.value.number - 1]) {
+    return false;
+  }
+
+  return progress.value[chapter.value.number - 1][lesson.value.number - 1];
+});
+const toggleComplete = () => {
+  if (!progress.value[chapter.value.number - 1]) {
+    progress.value[chapter.value.number - 1] = [];
+  }
+
+  progress.value[chapter.value.number - 1][lesson.value.number - 1] =
+    !isLessonComplete.value;
+};
 </script>
