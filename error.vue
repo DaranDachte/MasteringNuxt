@@ -32,25 +32,13 @@
 
 <script setup>
 import { useCourseProgress } from "~/stores/courseProgress.ts";
-import { defineAsyncComponent } from "vue";
-
+const course = await useCourse();
 const user = useSupabaseUser();
 const route = useRoute();
 const { chapterSlug, lessonSlug } = route.params;
+const lesson = await useLesson(chapterSlug, lessonSlug);
 const store = useCourseProgress();
 const { initialize, toggleComplete } = store;
-
-const lessonComponent = defineAsyncComponent(async () => {
-  const course = await useCourse();
-  const lesson = await useLesson(chapterSlug, lessonSlug);
-  const chapter = course.value.chapters.find(
-    (chapter) => chapter.slug === route.params.chapterSlug
-  );
-  return {
-    lesson,
-    chapter,
-  };
-});
 
 initialize();
 
@@ -92,6 +80,12 @@ definePageMeta({
 // Check if the current lesson is completed
 const isCompleted = computed(() => {
   return store.progress?.[chapterSlug]?.[lessonSlug] || 0;
+});
+
+const chapter = computed(() => {
+  return course.value.chapters.find(
+    (chapter) => chapter.slug === route.params.chapterSlug
+  );
 });
 
 const title = computed(() => {
