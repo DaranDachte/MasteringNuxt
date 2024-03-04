@@ -31,13 +31,13 @@
 </template>
 
 <script setup>
-import { useCourseProgress } from "~/stores/courseProgress.ts";
+// import { useCourseProgress } from "~/stores/courseProgress.ts";
 const course = await useCourse();
 const user = useSupabaseUser();
 const route = useRoute();
 const { chapterSlug, lessonSlug } = route.params;
 const lesson = await useLesson(chapterSlug, lessonSlug);
-const store = useCourseProgress();
+// // const store = useCourseProgress();
 const { initialize, toggleComplete } = store;
 
 initialize();

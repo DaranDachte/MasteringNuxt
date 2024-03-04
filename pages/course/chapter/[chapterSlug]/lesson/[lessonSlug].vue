@@ -31,18 +31,18 @@
 </template>
 
 <script setup>
-import { useCourseProgress } from "~/stores/courseProgress.ts";
+// import { useCourseProgress } from "~/stores/courseProgress.ts";
 import { defineAsyncComponent } from "vue";
 
 const user = useSupabaseUser();
 const route = useRoute();
 const { chapterSlug, lessonSlug } = route.params;
-const store = useCourseProgress();
+// const store = useCourseProgress();
 const { initialize, toggleComplete } = store;
 
 const lessonComponent = defineAsyncComponent(async () => {
-  const course = await useCourse();
-  const lesson = await useLesson(chapterSlug, lessonSlug);
+  const course = useCourse();
+  const lesson = useLesson(chapterSlug, lessonSlug);
   const chapter = course.value.chapters.find(
     (chapter) => chapter.slug === route.params.chapterSlug
   );
@@ -56,8 +56,8 @@ initialize();
 
 definePageMeta({
   middleware: [
-    async function ({ params }, from) {
-      const course = await useCourse();
+    function ({ params }, from) {
+      const course = useCourse();
 
       const chapter = course.value.chapters.find(
         (chapter) => chapter.slug === params.chapterSlug
